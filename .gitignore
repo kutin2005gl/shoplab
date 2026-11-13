@@ -1,0 +1,53 @@
+# ============================================================
+# Secrets — QUAN TRỌNG NHẤT. Repo này là public.
+# Chặn mọi file .env, chỉ cho phép .env.example (file mẫu, không có giá trị thật).
+# ============================================================
+.env
+.env.*
+!.env.example
+
+# Khóa / chứng chỉ / thông tin đăng nhập cloud
+*.pem
+*.key
+*.p12
+.aws/
+credentials
+
+# ============================================================
+# Python / Django
+# ============================================================
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+db.sqlite3
+
+# File sinh ra khi chạy Django
+staticfiles/
+media/
+
+# ============================================================
+# Node / React (Vite)
+# Lưu ý: KHÔNG ignore package-lock.json, file đó phải được commit.
+# ============================================================
+node_modules/
+dist/
+npm-debug.log*
+
+# ============================================================
+# Dữ liệu cục bộ (bản dump database có thể chứa dữ liệu nhạy cảm)
+# ============================================================
+*.dump
+*.sql.gz
+
+# ============================================================
+# Editor / hệ điều hành / công cụ cá nhân
+# ============================================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.claude/settings.local.json
