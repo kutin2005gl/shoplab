@@ -1,0 +1,13 @@
+# requirements.txt — danh sách thư viện Python của backend, pin đúng phiên bản (D-017, D-018).
+# "==" nghĩa là đúng phiên bản này, không tự nâng. Muốn nâng thì sửa số ở đây trong một PR riêng.
+
+# Framework web. 5.2 là bản LTS (hỗ trợ dài hạn) theo D-017.
+Django==5.2.19
+# Thêm tính năng REST API (serializer, viewset) lên trên Django.
+djangorestframework==3.18.3
+# Driver để Django nói chuyện với PostgreSQL. "[binary]" có sẵn thư viện C đã build,
+# nên image không cần cài compiler hay libpq.
+psycopg[binary]==3.3.9
+
+# Thư viện phụ thuộc (asgiref, sqlparse, typing_extensions) pip tự cài kèm.
+# Các thư viện khác (gunicorn, pytest, drf-spectacular...) sẽ được thêm đúng PR cần chúng.
