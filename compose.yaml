@@ -1,0 +1,32 @@
+# compose.yaml — mô tả các container (service) của ShopLab.
+# PR-003: mới có một service là database của bản Secure.
+# Các PR sau sẽ thêm api-secure, frontend... vào cùng file này.
+
+name: shoplab
+
+services:
+  db-secure:
+    # Pin phiên bản (D-017: PostgreSQL 17) để mọi máy chạy giống nhau.
+    image: postgres:17-alpine
+    # Profile = nhãn nhóm. Service này chỉ chạy khi bật --profile dev hoặc secure.
+    profiles: ["dev", "secure"]
+    # Tên DB, user, mật khẩu đọc từ file .env.secure (file này KHÔNG được commit).
+    env_file: .env.secure
+    ports:
+      # 127.0.0.1 = chỉ máy của bạn truy cập được. KHÔNG dùng 0.0.0.0 (D-014).
+      - "127.0.0.1:5432:5432"
+    volumes:
+      # Volume giữ dữ liệu: xoá container thì dữ liệu vẫn còn.
+      - pg-secure-data:/var/lib/postgresql/data
+    healthcheck:
+      # Cứ 5 giây hỏi Postgres "sẵn sàng nhận kết nối chưa?".
+      # $$ để compose không tự thay biến; biến được đọc bên trong container.
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  pg-secure-data:
