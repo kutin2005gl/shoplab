@@ -10,22 +10,33 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+from django.core.exceptions import ImproperlyConfigured
+
+# base.py nằm ở backend/config/settings/ nên phải đi lên 3 cấp để tới backend/.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+def get_env(name, default=None):
+    """Đọc biến môi trường. Không có giá trị và không có default -> báo lỗi rõ ràng,
+    để server không chạy với cấu hình thiếu (fail fast)."""
+    value = os.environ.get(name, default)
+    if value is None:
+        raise ImproperlyConfigured(f"Thiếu biến môi trường {name}")
+    return value
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ux8i=0-flgf3w)#ynk2fei!q07eh@co^yjg=)oo+!81sfn3j@&'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# SECRET_KEY KHÔNG có giá trị mặc định: bắt buộc đặt trong .env (không commit).
+# Ai biết SECRET_KEY có thể giả mạo cookie phiên và token ký bởi Django.
+SECRET_KEY = get_env('DJANGO_SECRET_KEY')
 
-ALLOWED_HOSTS = []
+# Mặc định tắt DEBUG; mỗi variant tự quyết định (xem secure.py / vulnerable.py).
+DEBUG = False
+
+# Danh sách host được phép, cách nhau bằng dấu phẩy. Chặn tấn công Host header.
+ALLOWED_HOSTS = [h for h in get_env('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h]
 
 
 # Application definition
@@ -72,10 +83,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Tên biến POSTGRES_* trùng với biến mà service db-secure (PR-003) đã dùng.
+# Host mặc định "db-secure" = tên service trong compose (hai container gọi nhau bằng tên).
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': get_env('POSTGRES_DB'),
+        'USER': get_env('POSTGRES_USER'),
+        'PASSWORD': get_env('POSTGRES_PASSWORD'),
+        'HOST': get_env('POSTGRES_HOST', 'db-secure'),
+        'PORT': get_env('POSTGRES_PORT', '5432'),
     }
 }
 
