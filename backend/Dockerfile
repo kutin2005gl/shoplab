@@ -18,6 +18,9 @@ COPY requirements.txt .
 # --no-cache-dir: không giữ cache của pip trong image, image nhẹ hơn.
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Chưa có code Django (PR-005 mới thêm manage.py), nên PR này chưa COPY code.
+# Copy code Django (manage.py, config/...) vào image. Đặt SAU khi cài thư viện
+# để sửa code không làm mất cache của bước pip install ở trên.
+COPY . .
+
 # Lệnh mặc định tạm: in phiên bản Python. PR-009 sẽ đổi thành lệnh chạy server.
 CMD ["python", "--version"]
