@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     # App của ShopLab (code bản Secure nằm trong backend/apps/).
     'apps.accounts',
 ]
@@ -62,7 +63,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'config.urls'
+# ROOT_URLCONF được đặt riêng ở secure.py / vulnerable.py (mỗi variant một bộ URL).
+
+# Cấu hình chung cho Django REST Framework.
+REST_FRAMEWORK = {
+    # Default deny (D-012): API nào không khai báo gì thì BẮT BUỘC đăng nhập.
+    # Muốn công khai phải ghi rõ AllowAny ngay trên view đó.
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+    # Chỉ trả JSON, tắt trang "browsable API" (giao diện HTML thử API của DRF).
+    'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
+}
 
 TEMPLATES = [
     {
