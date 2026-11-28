@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # App của ShopLab (code bản Secure nằm trong backend/apps/).
+    'apps.accounts',
 ]
 
 MIDDLEWARE = [
@@ -95,6 +97,11 @@ DATABASES = {
         'PORT': get_env('POSTGRES_PORT', '5432'),
     }
 }
+
+
+# Dùng User riêng (apps/accounts) thay cho User mặc định của Django.
+# PHẢI đặt trước migration đầu tiên: đổi sau khi đã có bảng user rất đau đầu.
+AUTH_USER_MODEL = 'accounts.User'
 
 
 # Password validation
